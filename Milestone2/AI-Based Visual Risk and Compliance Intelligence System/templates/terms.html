@@ -1,0 +1,413 @@
+{% extends "base.html" %}
+
+{% block extra_css %}
+<style>
+    /* ----- Hero & Layout Styling (Mirrors base.html and privacy.html) ----- */
+    .terms-hero {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        color: white;
+        padding: 4.5rem 0 3.5rem;
+        margin-bottom: 3.5rem;
+        border-radius: 0 0 40px 40px;
+    }
+    .hero-title {
+        font-size: 3rem;
+        font-weight: 700;
+        text-shadow: 2px 2px 8px rgba(0,0,0,0.15);
+        line-height: 1.2;
+    }
+    .hero-subtitle {
+        font-size: 1.25rem;
+        opacity: 0.95;
+    }
+    .badge-light-custom {
+        background: rgba(255,255,255,0.2);
+        color: white;
+        padding: 0.45rem 1.1rem;
+        border-radius: 30px;
+        font-weight: 500;
+        backdrop-filter: blur(4px);
+        border: 1px solid rgba(255,255,255,0.15);
+        font-size: 0.88rem;
+    }
+
+    /* ----- Terms Cards ----- */
+    .terms-card {
+        border: 1px solid var(--border-color);
+        border-radius: 18px;
+        background: var(--bg-card);
+        padding: 2rem;
+        margin-bottom: 2rem;
+        box-shadow: var(--shadow);
+        transition: transform 0.2s ease;
+    }
+    .terms-card:hover {
+        transform: translateY(-2px);
+    }
+    .terms-icon {
+        width: 52px;
+        height: 52px;
+        border-radius: 14px;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 1.4rem;
+        color: white;
+        flex-shrink: 0;
+    }
+
+    /* ----- Table of Contents Sticky Box ----- */
+    .toc-sticky {
+        position: sticky;
+        top: 90px;
+        border-radius: 18px;
+        border: 1px solid var(--border-color);
+        background: var(--bg-card);
+        padding: 1.5rem;
+        box-shadow: var(--shadow);
+    }
+    .toc-link {
+        display: block;
+        padding: 0.5rem 0.75rem;
+        color: var(--text-muted);
+        text-decoration: none;
+        font-size: 0.92rem;
+        border-radius: 8px;
+        transition: all 0.2s;
+    }
+    .toc-link:hover, .toc-link.active {
+        color: var(--accent);
+        background: var(--bg-wrapper);
+        font-weight: 600;
+    }
+
+    /* ----- Highlight Box & Disclaimers ----- */
+    .disclaimer-box {
+        background: var(--bg-wrapper);
+        border-left: 4px solid var(--accent);
+        border-radius: 12px;
+        padding: 1.25rem 1.5rem;
+        margin: 1.5rem 0;
+    }
+
+    /* ----- Bottom CTA Banner ----- */
+    .cta-section {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        color: white;
+        padding: 4rem 0;
+        border-radius: 40px 40px 0 0;
+        margin-top: 4.5rem;
+    }
+    .btn-primary-soft {
+        background: white;
+        color: #667eea;
+        border: none;
+        border-radius: 50px;
+        padding: 0.75rem 2.2rem;
+        font-weight: 600;
+        transition: all 0.3s;
+    }
+    .btn-primary-soft:hover {
+        background: #f0f0f0;
+        transform: scale(1.02);
+    }
+
+    @media (max-width: 768px) {
+        .hero-title { font-size: 2.2rem; }
+        .hero-subtitle { font-size: 1.05rem; }
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="terms-wrapper">
+    <!-- ===== HERO SECTION ===== -->
+    <section class="terms-hero">
+        <div class="container text-center hero-content">
+            <span class="badge-light-custom mb-3">
+                <i class="fas fa-file-contract text-warning me-1"></i> User Agreement &amp; Governance
+            </span>
+            <h1 class="hero-title mt-2">Terms of Service</h1>
+            <p class="hero-subtitle mx-auto mt-2" style="max-width: 720px;">
+                Guidelines, legal boundaries, and responsibilities governing your use of the
+                AI-Based Visual Risk and Compliance Intelligence System.
+            </p>
+            <div class="mt-3 small" style="opacity: 0.8;">
+                <span>Effective Date: October 2026</span> • <span>Version 2.4</span>
+            </div>
+        </div>
+    </section>
+
+    <!-- ===== KEY SUMMARY PILLARS ===== -->
+    <section class="py-2">
+        <div class="container">
+            <div class="row g-4 text-center mb-5">
+                <div class="col-md-3">
+                    <div class="card p-3 shadow-sm h-100" style="border: 1px solid var(--border-color); border-radius: 16px;">
+                        <i class="fas fa-chart-line fa-2x text-primary mb-2"></i>
+                        <h6 class="fw-bold mb-1">Decision Support</h6>
+                        <p class="text-muted small mb-0">Platform models simulations to assist choices, not replace human judgment.</p>
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="card p-3 shadow-sm h-100" style="border: 1px solid var(--border-color); border-radius: 16px;">
+                        <i class="fas fa-balance-scale fa-2x text-warning mb-2"></i>
+                        <h6 class="fw-bold mb-1">Advisory Boundaries</h6>
+                        <p class="text-muted small mb-0">Forecasts do not constitute licensed financial, medical, or legal advice.</p>
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="card p-3 shadow-sm h-100" style="border: 1px solid var(--border-color); border-radius: 16px;">
+                        <i class="fas fa-user-lock fa-2x text-info mb-2"></i>
+                        <h6 class="fw-bold mb-1">Twin Ownership</h6>
+                        <p class="text-muted small mb-0">You maintain complete ownership of your underlying behavioral profile.</p>
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="card p-3 shadow-sm h-100" style="border: 1px solid var(--border-color); border-radius: 16px;">
+                        <i class="fas fa-shield-alt fa-2x text-success mb-2"></i>
+                        <h6 class="fw-bold mb-1">Compliant Usage</h6>
+                        <p class="text-muted small mb-0">Integrity and accuracy of logged inputs ensure reliable risk modeling.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- ===== DETAILED TERMS CONTENT ===== -->
+    <section class="py-4">
+        <div class="container">
+            <div class="row g-4">
+
+                <!-- Quick Navigation Sidebar -->
+                <div class="col-lg-4 d-none d-lg-block">
+                    <div class="toc-sticky">
+                        <h6 class="fw-bold text-uppercase small text-muted mb-3">Terms Navigation</h6>
+                        <nav class="d-flex flex-column gap-1">
+                            <a href="#acceptance" class="toc-link"><i class="fas fa-check-circle me-2"></i>1. Acceptance of Terms</a>
+                            <a href="#scope" class="toc-link"><i class="fas fa-robot me-2"></i>2. Scope of Decision Support</a>
+                            <a href="#disclaimer" class="toc-link"><i class="fas fa-exclamation-triangle me-2"></i>3. Non-Professional Disclaimer</a>
+                            <a href="#accounts" class="toc-link"><i class="fas fa-id-card me-2"></i>4. Accounts &amp; Input Integrity</a>
+                            <a href="#ip" class="toc-link"><i class="fas fa-code me-2"></i>5. Intellectual Property Rights</a>
+                            <a href="#acceptable-use" class="toc-link"><i class="fas fa-ban me-2"></i>6. Acceptable Conduct</a>
+                            <a href="#liability" class="toc-link"><i class="fas fa-gavel me-2"></i>7. Limitation of Liability</a>
+                            <a href="#termination" class="toc-link"><i class="fas fa-door-open me-2"></i>8. Termination &amp; Inquiries</a>
+                        </nav>
+                        <hr>
+                        <div class="p-2 rounded bg-light text-center">
+                            <small class="text-muted d-block mb-2">Have contractual or compliance questions?</small>
+                            <a href="{{ url_for('contact') }}" class="btn btn-sm btn-outline-primary rounded-pill w-100">
+                                <i class="fas fa-envelope me-1"></i> Contact Legal Desk
+                            </a>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Main Terms Text Column -->
+                <div class="col-lg-8">
+
+                    <!-- Clause 1 -->
+                    <div class="terms-card" id="acceptance">
+                        <div class="d-flex align-items-center gap-3 mb-3">
+                            <div class="terms-icon" style="background: linear-gradient(135deg, #667eea, #764ba2);">
+                                <i class="fas fa-handshake"></i>
+                            </div>
+                            <div>
+                                <h4 class="fw-bold mb-0" style="color: var(--text-primary);">1. Acceptance of Terms</h4>
+                                <small class="text-muted">Binding Agreement</small>
+                            </div>
+                        </div>
+                        <p class="text-muted leading-relaxed">
+                            By creating an account, accessing dashboards, or utilizing the simulation and forecasting tools within
+                            the <strong>AI-Based Visual Risk and Compliance Intelligence System</strong>, you agree to be bound by these
+                            Terms of Service and our associated <a href="{{ url_for('privacy') }}" class="text-primary text-decoration-none">Privacy Policy</a>[cite: 1].
+                            If you do not agree to all terms outlined herein, you must cease using the platform immediately.
+                        </p>
+                    </div>
+
+                    <!-- Clause 2 -->
+                    <div class="terms-card" id="scope">
+                        <div class="d-flex align-items-center gap-3 mb-3">
+                            <div class="terms-icon" style="background: linear-gradient(135deg, #f093fb, #f5576c);">
+                                <i class="fas fa-project-diagram"></i>
+                            </div>
+                            <div>
+                                <h4 class="fw-bold mb-0" style="color: var(--text-primary);">2. Nature &amp; Scope of Decision Support</h4>
+                                <small class="text-muted">Predictive Digital Twin Mechanics</small>
+                            </div>
+                        </div>
+                        <p class="text-muted leading-relaxed">
+                            Our system builds a dynamic digital representation of your habits, routines, expenditures, study velocity,
+                            and lifestyle commitments. The platform uses predictive algorithms, statistical modeling, and machine learning
+                            to calculate risk matrices and potential future outcomes.
+                        </p>
+                        <p class="text-muted leading-relaxed">
+                            <strong>Advisory Only:</strong> Visual representations (such as gauges, charts, and recommendations) are strictly
+                            evaluative and designed to illuminate trade-offs before you act. All final choices, transactions, and lifestyle
+                            decisions remain solely in your own hands.
+                        </p>
+                    </div>
+
+                    <!-- Clause 3 -->
+                    <div class="terms-card" id="disclaimer">
+                        <div class="d-flex align-items-center gap-3 mb-3">
+                            <div class="terms-icon" style="background: linear-gradient(135deg, #fa709a, #fee140);">
+                                <i class="fas fa-balance-scale"></i>
+                            </div>
+                            <div>
+                                <h4 class="fw-bold mb-0" style="color: var(--text-primary);">3. Non-Professional Disclaimer</h4>
+                                <small class="text-muted">Regulatory &amp; Professional Boundaries</small>
+                            </div>
+                        </div>
+                        <p class="text-muted leading-relaxed">
+                            The services provided through this platform do not substitute for certified professional consultations:
+                        </p>
+
+                        <div class="disclaimer-box">
+                            <ul class="mb-0 text-muted small d-flex flex-column gap-2">
+                                <li><strong>No Financial Advice:</strong> Financial projections, liquidity alerts, and cash-flow risk calculations do not constitute registered investment, tax, or banking advice.</li>
+                                <li><strong>No Medical or Health Diagnosis:</strong> Fatigue scores, recovery windows, and lifestyle recommendations are wellness indicators, not medical diagnostics or therapeutic regimens.</li>
+                                <li><strong>No Academic Guarantee:</strong> Forecasted GPA and study milestones reflect mathematical simulations based on past pace, not an accredited educational assurance.</li>
+                            </ul>
+                        </div>
+                    </div>
+
+                    <!-- Clause 4 -->
+                    <div class="terms-card" id="accounts">
+                        <div class="d-flex align-items-center gap-3 mb-3">
+                            <div class="terms-icon" style="background: linear-gradient(135deg, #4facfe, #00f2fe);">
+                                <i class="fas fa-user-cog"></i>
+                            </div>
+                            <div>
+                                <h4 class="fw-bold mb-0" style="color: var(--text-primary);">4. Accounts &amp; Input Integrity</h4>
+                                <small class="text-muted">Data Accuracy &amp; Credentials</small>
+                            </div>
+                        </div>
+                        <p class="text-muted leading-relaxed">
+                            Because predictive modeling relies directly on logged activities (e.g., budget entries, study blocks, exercise
+                            telemetry), you agree to provide authentic and reasonably accurate information. You are responsible for safeguarding
+                            your account credentials and must notify us immediately if unauthorized access occurs.
+                        </p>
+                    </div>
+
+                    <!-- Clause 5 -->
+                    <div class="terms-card" id="ip">
+                        <div class="d-flex align-items-center gap-3 mb-3">
+                            <div class="terms-icon" style="background: linear-gradient(135deg, #43e97b, #38f9d7);">
+                                <i class="fas fa-copyright"></i>
+                            </div>
+                            <div>
+                                <h4 class="fw-bold mb-0" style="color: var(--text-primary);">5. Intellectual Property</h4>
+                                <small class="text-muted">Platform Architecture &amp; User Rights</small>
+                            </div>
+                        </div>
+                        <p class="text-muted leading-relaxed">
+                            <strong>Platform IP:</strong> All neural weights, interface design, algorithms, visual compliance logic, software,
+                            and trademarks remain the exclusive property of the AI-Based Visual Risk and Compliance Intelligence System.
+                        </p>
+                        <p class="text-muted leading-relaxed">
+                            <strong>Your Data:</strong> You retain ownership of all personal entries, schedule logs, and uploaded files. You grant
+                            us a limited, non-exclusive license solely to process and analyze this data to render predictions within your individual instance.
+                        </p>
+                    </div>
+
+                    <!-- Clause 6 -->
+                    <div class="terms-card" id="acceptable-use">
+                        <div class="d-flex align-items-center gap-3 mb-3">
+                            <div class="terms-icon" style="background: linear-gradient(135deg, #ed64a6, #f56565);">
+                                <i class="fas fa-ban"></i>
+                            </div>
+                            <div>
+                                <h4 class="fw-bold mb-0" style="color: var(--text-primary);">6. Acceptable Conduct &amp; Prohibitions</h4>
+                                <small class="text-muted">Prohibited Actions</small>
+                            </div>
+                        </div>
+                        <p class="text-muted leading-relaxed">Users agree not to:</p>
+                        <div class="row g-2">
+                            <div class="col-sm-6">
+                                <div class="p-2 border rounded text-muted small"><i class="fas fa-times-circle text-danger me-2"></i>Reverse engineer or scrape simulation models.</div>
+                            </div>
+                            <div class="col-sm-6">
+                                <div class="p-2 border rounded text-muted small"><i class="fas fa-times-circle text-danger me-2"></i>Circumvent user authentication or rate limits.</div>
+                            </div>
+                            <div class="col-sm-6">
+                                <div class="p-2 border rounded text-muted small"><i class="fas fa-times-circle text-danger me-2"></i>Feed fraudulent identity logs into shared endpoints.</div>
+                            </div>
+                            <div class="col-sm-6">
+                                <div class="p-2 border rounded text-muted small"><i class="fas fa-times-circle text-danger me-2"></i>Use platform telemetry for unlawful profiling.</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Clause 7 -->
+                    <div class="terms-card" id="liability">
+                        <div class="d-flex align-items-center gap-3 mb-3">
+                            <div class="terms-icon" style="background: linear-gradient(135deg, #667eea, #764ba2);">
+                                <i class="fas fa-shield-virus"></i>
+                            </div>
+                            <div>
+                                <h4 class="fw-bold mb-0" style="color: var(--text-primary);">7. Limitation of Liability</h4>
+                                <small class="text-muted">Disclaimer of Warranties</small>
+                            </div>
+                        </div>
+                        <p class="text-muted leading-relaxed">
+                            To the maximum extent permitted by applicable law, the platform is provided on an <em>"AS IS"</em> and
+                            <em>"AS AVAILABLE"</em> basis. While our machine learning models aim for rigorous analytical accuracy,
+                            we do not warrant that simulations will be error-free or that real-world outcomes will identically match
+                            projected risk vectors. We shall not be held liable for any direct, indirect, incidental, or consequential
+                            losses resulting from decisions made based upon platform telemetry.
+                        </p>
+                    </div>
+
+                    <!-- Clause 8 -->
+                    <div class="terms-card mb-0" id="termination">
+                        <div class="d-flex align-items-center gap-3 mb-3">
+                            <div class="terms-icon" style="background: linear-gradient(135deg, #a18cd1, #fbc2eb);">
+                                <i class="fas fa-envelope-open-text"></i>
+                            </div>
+                            <div>
+                                <h4 class="fw-bold mb-0" style="color: var(--text-primary);">8. Termination &amp; Contact Inquiries</h4>
+                                <small class="text-muted">Account Closure &amp; Legal Support</small>
+                            </div>
+                        </div>
+                        <p class="text-muted leading-relaxed">
+                            You may delete your account and associated digital twin profile at any time through your settings[cite: 1].
+                            We reserve the right to suspend or terminate accounts that breach these terms.
+                        </p>
+                        <div class="p-3 rounded border" style="background: var(--bg-wrapper); border-color: var(--border-color) !important;">
+                            <div class="d-flex flex-column flex-sm-row justify-content-between align-items-sm-center gap-2">
+                                <div>
+                                    <strong class="d-block text-primary small">Legal Governance &amp; Compliance Office</strong>
+                                    <span class="text-muted small">Inquiries: legal@visualrisk.ai</span>
+                                </div>
+                                <a href="{{ url_for('contact') }}" class="btn btn-sm btn-outline-primary rounded-pill px-3 py-1">
+                                    <i class="fas fa-paper-plane me-1"></i> Contact Desk
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- ===== CALL TO ACTION ===== -->
+    <section class="cta-section">
+        <div class="container text-center">
+            <h2 class="display-6 fw-bold mb-3">Clear Guardrails for Confident Decisions</h2>
+            <p class="mb-4" style="font-size: 1.15rem; opacity: 0.9; max-width: 600px; margin: 0 auto;">
+                Have questions regarding compliance terms or data handling? Our team is here to assist.
+            </p>
+            <div class="d-flex justify-content-center gap-3 flex-wrap">
+                <a href="{{ url_for('contact') }}" class="btn btn-primary-soft btn-lg px-4 py-3">
+                    <i class="fas fa-envelope me-1"></i> Speak with Legal Team
+                </a>
+                <a href="{{ url_for('index') }}" class="btn btn-outline-white btn-lg px-4 py-3">
+                    <i class="fas fa-home me-1"></i> Return Home
+                </a>
+            </div>
+        </div>
+    </section>
+</div>
+{% endblock %}

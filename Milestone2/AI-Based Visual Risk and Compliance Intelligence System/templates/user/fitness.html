@@ -1,0 +1,615 @@
+{% extends "base.html" %}
+
+{% block extra_css %}
+<style>
+    .fitness-wrapper { background: #f7fafc; border-radius: 20px; padding: 1rem; }
+    .metric-card { border-radius: 16px; padding: 1rem 1.2rem; color: white; transition: transform 0.2s; height: 100%; position: relative; overflow: hidden; }
+    .metric-card:hover { transform: translateY(-3px); box-shadow: 0 8px 25px rgba(0,0,0,0.08); }
+    .metric-card h5 { font-weight: 400; opacity: 0.9; font-size: 0.85rem; margin-bottom: 0.2rem; }
+    .metric-card h2 { font-weight: 700; margin: 0.1rem 0; font-size: 1.8rem; }
+    .metric-card small { opacity: 0.8; font-size: 0.75rem; }
+    .card-custom { border: none; border-radius: 16px; box-shadow: 0 4px 12px rgba(0,0,0,0.05); overflow: hidden; }
+    .card-header-custom { background: transparent; font-weight: 600; padding: 0.8rem 1.2rem; border-bottom: 1px solid #edf2f7; font-size: 0.95rem; }
+    .table-custom th { font-weight: 600; color: #4a5568; font-size: 0.8rem; text-transform: uppercase; letter-spacing: 0.3px; border-bottom: 2px solid #edf2f7; }
+    .table-custom td { font-size: 0.85rem; vertical-align: middle; }
+    .badge-activity { background: rgba(79, 172, 254, 0.15); color: #0077b6; font-weight: 600; }
+    .badge-cal { background: rgba(245, 87, 108, 0.12); color: #e53e3e; font-weight: 600; }
+    .form-control, .form-select { border-radius: 10px; border: 1.5px solid #e2e8f0; transition: border-color 0.2s; }
+    .form-control:focus, .form-select:focus { border-color: #667eea; box-shadow: 0 0 0 3px rgba(102,126,234,0.15); }
+    .btn-primary-custom { background: linear-gradient(135deg, #667eea, #764ba2); border: none; border-radius: 50px; padding: 0.5rem 1.5rem; font-weight: 600; color: white; transition: all 0.2s; width: 100%; }
+    .btn-primary-custom:hover { transform: scale(1.02); box-shadow: 0 8px 25px rgba(102,126,234,0.4); color: white; }
+    .chart-container { background: white; border-radius: 14px; padding: 0.8rem; box-shadow: 0 4px 12px rgba(0,0,0,0.05); height: 100%; }
+    .fitness-scroll { max-height: 350px; overflow-y: auto; }
+    .fitness-scroll::-webkit-scrollbar { width: 4px; }
+    .fitness-scroll::-webkit-scrollbar-thumb { background: #cbd5e0; border-radius: 10px; }
+    .stat-icon { font-size: 1.8rem; opacity: 0.7; }
+    .action-btn { padding: 0.2rem 0.5rem; font-size: 0.8rem; }
+    @media (max-width: 768px) { .metric-card h2 { font-size: 1.4rem; } }
+</style>
+{% endblock extra_css %}
+
+{% block content %}
+{# 1. Defensive resolution of logs list #}
+{% set logs = [] %}
+{% if fitness_logs is defined and fitness_logs is not none %}
+    {% set logs = fitness_logs %}
+{% elif user is defined and user and user.fitness_logs is defined and user.fitness_logs is not none %}
+    {% set logs = user.fitness_logs %}
+{% elif workouts is defined and workouts is not none %}
+    {% set logs = workouts %}
+{% elif activities_logs is defined and activities_logs is not none %}
+    {% set logs = activities_logs %}
+{% endif %}
+
+{# 2. Dynamically calculate totals across all potential duration and calorie field names #}
+{% set ns = namespace(total_min=0.0, total_cal=0.0, count=0) %}
+{% for item in logs %}
+    {% set item_dur = 0.0 %}
+    {% if item.duration is defined and item.duration is not none and (item.duration|float) > 0 %}
+        {% set item_dur = item.duration|float %}
+    {% elif item.minutes is defined and item.minutes is not none and (item.minutes|float) > 0 %}
+        {% set item_dur = item.minutes|float %}
+    {% elif item.duration_minutes is defined and item.duration_minutes is not none and (item.duration_minutes|float) > 0 %}
+        {% set item_dur = item.duration_minutes|float %}
+    {% elif item.duration_min is defined and item.duration_min is not none and (item.duration_min|float) > 0 %}
+        {% set item_dur = item.duration_min|float %}
+    {% elif item.mins is defined and item.mins is not none and (item.mins|float) > 0 %}
+        {% set item_dur = item.mins|float %}
+    {% elif item.time is defined and item.time is not none and (item.time|float) > 0 %}
+        {% set item_dur = item.time|float %}
+    {% elif item.hours is defined and item.hours is not none and (item.hours|float) > 0 %}
+        {% set item_dur = (item.hours|float) * 60 %}
+    {% elif item.duration is defined and item.duration is not none %}
+        {% set item_dur = item.duration|float %}
+    {% elif item.minutes is defined and item.minutes is not none %}
+        {% set item_dur = item.minutes|float %}
+    {% endif %}
+
+    {% set item_cal = 0.0 %}
+    {% if item.calories is defined and item.calories is not none and (item.calories|float) > 0 %}
+        {% set item_cal = item.calories|float %}
+    {% elif item.calories_burned is defined and item.calories_burned is not none and (item.calories_burned|float) > 0 %}
+        {% set item_cal = item.calories_burned|float %}
+    {% endif %}
+
+    {% set ns.total_min = ns.total_min + item_dur %}
+    {% set ns.total_cal = ns.total_cal + item_cal %}
+    {% set ns.count = ns.count + 1 %}
+{% endfor %}
+
+{# Fallbacks for total minutes #}
+{% set fallback_mins = 0.0 %}
+{% if total_fitness is defined and total_fitness is not none %}
+    {% set fallback_mins = total_fitness|float %}
+{% elif metrics is defined and metrics and metrics.total_minutes is defined and metrics.total_minutes is not none %}
+    {% set fallback_mins = metrics.total_minutes|float %}
+{% elif metrics is defined and metrics and metrics.total_fitness is defined and metrics.total_fitness is not none %}
+    {% set fallback_mins = metrics.total_fitness|float %}
+{% endif %}
+{% set total_mins = ns.total_min if ns.total_min > 0 else fallback_mins %}
+
+{# Fallbacks for total calories #}
+{% set fallback_cals = 0.0 %}
+{% if metrics is defined and metrics and metrics.total_calories is defined and metrics.total_calories is not none %}
+    {% set fallback_cals = metrics.total_calories|float %}
+{% endif %}
+{% set total_cals = ns.total_cal if ns.total_cal > 0 else fallback_cals %}
+
+{# Streak count #}
+{% set streak_count = logs|length %}
+{% if fitness_streak is defined and fitness_streak is not none %}
+    {% set streak_count = fitness_streak|int %}
+{% elif metrics is defined and metrics and metrics.streak is defined and metrics.streak is not none %}
+    {% set streak_count = metrics.streak|int %}
+{% endif %}
+
+<div class="fitness-wrapper">
+    <!-- Page Header -->
+    <div class="d-flex justify-content-between align-items-center mb-3">
+        <h3 class="fw-bold mb-0">
+            <i class="fas fa-running text-primary me-2"></i>Fitness &amp; Activity Tracking
+        </h3>
+        <span class="badge bg-light text-dark">
+            Last updated: {{ datetime.now().strftime('%d %b, %I:%M %p') if datetime is defined else 'Today' }}
+        </span>
+    </div>
+
+    <!-- ===== Summary Metrics (4 Top Cards) ===== -->
+    <div class="row g-3 mb-4">
+        <!-- Metric 1: Total Active Minutes -->
+        <div class="col-6 col-md-3">
+            <div class="metric-card" style="background: linear-gradient(135deg, #4facfe, #00f2fe);">
+                <div class="d-flex justify-content-between">
+                    <div>
+                        <h5>Total Activity</h5>
+                        <h2>{{ total_mins|round(0)|int }} min</h2>
+                        <small>Avg {{ ((total_mins / 30)|round(0)|int) if total_mins > 0 else 0 }} min/day</small>
+                    </div>
+                    <div class="stat-icon"><i class="fas fa-running"></i></div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Metric 2: Estimated Calories Burned -->
+        <div class="col-6 col-md-3">
+            <div class="metric-card" style="background: linear-gradient(135deg, #fa709a, #fee140);">
+                <div class="d-flex justify-content-between">
+                    <div>
+                        <h5>Calories Burned</h5>
+                        <h2>{{ total_cals|round(0)|int }} kcal</h2>
+                        <small>{{ 'High Burn 🔥' if total_cals >= 2000 else 'Active Energy' }}</small>
+                    </div>
+                    <div class="stat-icon"><i class="fas fa-fire"></i></div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Metric 3: Logged Sessions -->
+        <div class="col-6 col-md-3">
+            <div class="metric-card" style="background: linear-gradient(135deg, #43e97b, #38f9d7); color: #1a202c;">
+                <div class="d-flex justify-content-between">
+                    <div>
+                        <h5>Logged Sessions</h5>
+                        <h2>{{ logs|length }}</h2>
+                        <small>{{ 'Consistent' if logs|length >= 5 else 'Getting Started' }}</small>
+                    </div>
+                    <div class="stat-icon"><i class="fas fa-dumbbell" style="color: #1a202c;"></i></div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Metric 4: Fitness Streak -->
+        <div class="col-6 col-md-3">
+            <div class="metric-card" style="background: linear-gradient(135deg, #667eea, #764ba2);">
+                <div class="d-flex justify-content-between">
+                    <div>
+                        <h5>Fitness Streak</h5>
+                        <h2>{{ streak_count }} Days</h2>
+                        <small>{{ 'On Fire 🔥' if streak_count >= 5 else 'Building Habit' }}</small>
+                    </div>
+                    <div class="stat-icon"><i class="fas fa-bolt"></i></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- ===== Left: Add Activity + Activity Pie Chart ===== -->
+    <div class="row g-3">
+        <div class="col-lg-4">
+            <!-- Add Activity Card -->
+            <div class="card card-custom mb-3">
+                <div class="card-header-custom">
+                    <i class="fas fa-plus-circle text-primary me-1"></i> Log Activity
+                </div>
+                <div class="card-body">
+                    <form method="POST" action="{{ url_for('user_fitness') }}" id="addFitnessForm">
+                        <div class="mb-2">
+                            <label class="form-label small fw-bold">Date</label>
+                            <input type="date" name="date" class="form-control" value="{{ datetime.now().strftime('%Y-%m-%d') if datetime is defined else '' }}" required>
+                        </div>
+                        <div class="mb-2">
+                            <label class="form-label small fw-bold">Activity Type</label>
+                            <select name="activity" id="fitness-activity-select" class="form-select" onchange="syncAddActivity(this.value);" required>
+                                <option value="Running">Running</option>
+                                <option value="Cycling">Cycling</option>
+                                <option value="Gym / Weights">Gym / Weights</option>
+                                <option value="Walking">Walking</option>
+                                <option value="Swimming">Swimming</option>
+                                <option value="Yoga">Yoga</option>
+                                <option value="HIIT">HIIT</option>
+                                <option value="Sports">Sports</option>
+                                <option value="Other">Other</option>
+                            </select>
+                            <input type="hidden" name="activity_type" id="fitness-activity-type" value="Running">
+                            <input type="hidden" name="type" id="fitness-type" value="Running">
+                        </div>
+                        <div class="mb-2">
+                            <label class="form-label small fw-bold">Duration (Minutes)</label>
+                            <!-- Synchronized across all common field aliases -->
+                            <input type="number" name="duration" id="fitness-duration" step="1" min="1" max="720" class="form-control" placeholder="e.g. 45" oninput="syncAddDuration(this.value);" onchange="syncAddDuration(this.value);" required>
+                            <input type="hidden" name="minutes" id="fitness-minutes">
+                            <input type="hidden" name="duration_minutes" id="fitness-duration-minutes">
+                            <input type="hidden" name="duration_min" id="fitness-duration-min">
+                            <input type="hidden" name="mins" id="fitness-mins">
+                            <input type="hidden" name="time" id="fitness-time">
+                        </div>
+                        <div class="mb-2">
+                            <label class="form-label small fw-bold">Calories Burned (kcal)</label>
+                            <input type="number" name="calories" id="fitness-calories" min="0" step="1" class="form-control" placeholder="e.g. 320" oninput="syncAddCalories(this.value);" onchange="syncAddCalories(this.value);" required>
+                            <input type="hidden" name="calories_burned" id="fitness-calories-burned">
+                        </div>
+                        <button type="submit" class="btn btn-primary-custom mt-2">
+                            <i class="fas fa-save me-1"></i> Save Activity Log
+                        </button>
+                    </form>
+                </div>
+            </div>
+
+            <!-- Activity Breakdown Doughnut Chart -->
+            {% if activities is defined and activities %}
+            <div class="card card-custom">
+                <div class="card-header-custom">
+                    <i class="fas fa-chart-pie text-info me-1"></i> Minutes by Activity
+                </div>
+                <div class="card-body">
+                    <canvas id="activityPieChart" height="200"></canvas>
+                </div>
+            </div>
+            {% else %}
+            <div class="card card-custom">
+                <div class="card-body text-muted text-center py-4">
+                    <i class="fas fa-inbox fa-2x mb-2 d-block"></i>
+                    <p class="mb-0">No fitness logs yet.<br>Add sessions to visualize activity breakdown.</p>
+                </div>
+            </div>
+            {% endif %}
+        </div>
+
+        <!-- ===== Right: Recent Activities + Forecast ===== -->
+        <div class="col-lg-8">
+            <div class="card card-custom mb-3">
+                <div class="card-header-custom d-flex justify-content-between align-items-center">
+                    <span><i class="fas fa-list-ul text-primary me-1"></i> Recent Activities</span>
+                    <span class="badge bg-light text-dark">{{ logs|length }} entries</span>
+                </div>
+                <div class="card-body p-0">
+                    <div class="fitness-scroll">
+                        <table class="table table-custom table-hover mb-0">
+                            <thead>
+                                <tr>
+                                    <th>Date</th>
+                                    <th>Activity</th>
+                                    <th>Duration</th>
+                                    <th class="text-center">Calories</th>
+                                    <th class="text-center">Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% if logs %}
+                                    {% for item in logs|reverse %}
+                                    {% set row_dur = 0.0 %}
+                                    {% if item.duration is defined and item.duration is not none and (item.duration|float) > 0 %}
+                                        {% set row_dur = item.duration|float %}
+                                    {% elif item.minutes is defined and item.minutes is not none and (item.minutes|float) > 0 %}
+                                        {% set row_dur = item.minutes|float %}
+                                    {% elif item.duration_minutes is defined and item.duration_minutes is not none and (item.duration_minutes|float) > 0 %}
+                                        {% set row_dur = item.duration_minutes|float %}
+                                    {% elif item.duration_min is defined and item.duration_min is not none and (item.duration_min|float) > 0 %}
+                                        {% set row_dur = item.duration_min|float %}
+                                    {% elif item.mins is defined and item.mins is not none and (item.mins|float) > 0 %}
+                                        {% set row_dur = item.mins|float %}
+                                    {% elif item.time is defined and item.time is not none and (item.time|float) > 0 %}
+                                        {% set row_dur = item.time|float %}
+                                    {% elif item.hours is defined and item.hours is not none and (item.hours|float) > 0 %}
+                                        {% set row_dur = (item.hours|float) * 60 %}
+                                    {% elif item.duration is defined and item.duration is not none %}
+                                        {% set row_dur = item.duration|float %}
+                                    {% elif item.minutes is defined and item.minutes is not none %}
+                                        {% set row_dur = item.minutes|float %}
+                                    {% endif %}
+
+                                    {% set row_cal = 0.0 %}
+                                    {% if item.calories is defined and item.calories is not none and (item.calories|float) > 0 %}
+                                        {% set row_cal = item.calories|float %}
+                                    {% elif item.calories_burned is defined and item.calories_burned is not none and (item.calories_burned|float) > 0 %}
+                                        {% set row_cal = item.calories_burned|float %}
+                                    {% endif %}
+
+                                    {% set row_act = 'Workout' %}
+                                    {% if item.activity is defined and item.activity %}
+                                        {% set row_act = item.activity %}
+                                    {% elif item.activity_type is defined and item.activity_type %}
+                                        {% set row_act = item.activity_type %}
+                                    {% elif item.name is defined and item.name %}
+                                        {% set row_act = item.name %}
+                                    {% endif %}
+
+                                    {% set row_id = (item.id if (item.id is defined and item.id is not none) else (item.log_id if (item.log_id is defined and item.log_id is not none) else loop.index))|int %}
+                                    {% set row_date_str = item.date.strftime('%d-%m-%Y') if (item.date is defined and item.date and item.date.strftime is defined) else (item.date if item.date is defined else 'Today') %}
+                                    {% set row_date_iso = item.date.strftime('%Y-%m-%d') if (item.date is defined and item.date and item.date.strftime is defined) else (item.date if item.date is defined else '') %}
+
+                                    <tr>
+                                        <td>{{ row_date_str }}</td>
+                                        <td>
+                                            <span class="badge badge-activity px-2 py-1 rounded-pill">
+                                                <i class="fas fa-running me-1"></i>{{ row_act }}
+                                            </span>
+                                        </td>
+                                        <td class="fw-bold">{{ row_dur|round(0)|int }} min</td>
+                                        <td class="text-center">
+                                            <span class="badge badge-cal px-2 py-1 rounded-pill">
+                                                {{ row_cal|round(0)|int }} kcal
+                                            </span>
+                                        </td>
+                                        <td class="text-center">
+                                            <button type="button" class="btn btn-sm btn-outline-primary action-btn me-1"
+                                                    data-bs-toggle="modal" data-bs-target="#editFitnessModal"
+                                                    data-id="{{ row_id }}"
+                                                    data-date="{{ row_date_iso }}"
+                                                    data-activity="{{ row_act }}"
+                                                    data-duration="{{ row_dur|round(0)|int }}"
+                                                    data-calories="{{ row_cal|round(0)|int }}">
+                                                <i class="fas fa-edit"></i>
+                                            </button>
+                                            <form method="POST" action="{{ url_for('delete_fitness', log_id=row_id, id=row_id) }}"
+                                                  style="display:inline-block;"
+                                                  onsubmit="return confirm('Permanently delete this fitness record?');">
+                                                <button type="submit" class="btn btn-sm btn-outline-danger action-btn">
+                                                    <i class="fas fa-trash-alt"></i>
+                                                </button>
+                                            </form>
+                                        </td>
+                                    </tr>
+                                    {% endfor %}
+                                {% else %}
+                                    <tr>
+                                        <td colspan="5" class="text-center text-muted py-4">
+                                            No fitness activities recorded yet.
+                                        </td>
+                                    </tr>
+                                {% endif %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Forecast / Progression Chart Card -->
+            {% set has_forecast = (fitness_forecast is defined and fitness_forecast) or (forecast is defined and forecast) %}
+            {% if has_forecast or (logs|length >= 3) %}
+            <div class="card card-custom">
+                <div class="card-header-custom d-flex justify-content-between align-items-center">
+                    <span><i class="fas fa-chart-line text-success me-1"></i> Fitness Progression (Next 30 Days)</span>
+                    <span class="badge bg-success-subtle text-success small">AI Simulated</span>
+                </div>
+                <div class="card-body">
+                    <canvas id="fitnessForecastChart" height="150"></canvas>
+                </div>
+            </div>
+            {% else %}
+            <div class="card card-custom">
+                <div class="card-body text-muted text-center py-4">
+                    <i class="fas fa-chart-line fa-2x mb-2 d-block"></i>
+                    <p class="mb-0">Add at least 3 fitness sessions to unlock predictive activity forecasts.</p>
+                    <small class="text-muted">({{ logs|length }}/3 logged)</small>
+                </div>
+            </div>
+            {% endif %}
+        </div>
+    </div>
+</div>
+
+<!-- ===== EDIT FITNESS MODAL ===== -->
+<div class="modal fade" id="editFitnessModal" tabindex="-1" aria-labelledby="editFitnessModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content" style="border-radius: 18px; border: none;">
+            <form method="POST" action="{{ url_for('edit_fitness', log_id=0, id=0) }}" id="editFitnessForm">
+                <input type="hidden" name="id" id="edit-fitness-id">
+                <input type="hidden" name="log_id" id="edit-fitness-log-id">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="editFitnessModalLabel">
+                        <i class="fas fa-edit text-primary me-2"></i>Edit Activity Session
+                    </h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="mb-3">
+                        <label class="form-label fw-bold">Date</label>
+                        <input type="date" name="date" id="edit-fitness-date" class="form-control" required>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label fw-bold">Activity Type</label>
+                        <select name="activity" id="edit-fitness-activity" class="form-select" onchange="syncEditActivity(this.value);" required>
+                            <option value="Running">Running</option>
+                            <option value="Cycling">Cycling</option>
+                            <option value="Gym / Weights">Gym / Weights</option>
+                            <option value="Walking">Walking</option>
+                            <option value="Swimming">Swimming</option>
+                            <option value="Yoga">Yoga</option>
+                            <option value="HIIT">HIIT</option>
+                            <option value="Sports">Sports</option>
+                            <option value="Other">Other</option>
+                        </select>
+                        <input type="hidden" name="activity_type" id="edit-fitness-activity-type">
+                        <input type="hidden" name="type" id="edit-fitness-type">
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label fw-bold">Duration (Minutes)</label>
+                        <input type="number" name="duration" id="edit-fitness-duration" step="1" min="1" max="720" class="form-control" oninput="syncEditDuration(this.value);" onchange="syncEditDuration(this.value);" required>
+                        <input type="hidden" name="minutes" id="edit-fitness-minutes">
+                        <input type="hidden" name="duration_minutes" id="edit-fitness-duration-minutes">
+                        <input type="hidden" name="duration_min" id="edit-fitness-duration-min">
+                        <input type="hidden" name="mins" id="edit-fitness-mins">
+                        <input type="hidden" name="time" id="edit-fitness-time">
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label fw-bold">Calories Burned (kcal)</label>
+                        <input type="number" name="calories" id="edit-fitness-calories" min="0" step="1" class="form-control" oninput="syncEditCalories(this.value);" onchange="syncEditCalories(this.value);" required>
+                        <input type="hidden" name="calories_burned" id="edit-fitness-calories-burned">
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                    <button type="submit" class="btn btn-primary-custom" style="width: auto;">
+                        <i class="fas fa-save me-1"></i> Update
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock content %}
+
+{% block scripts %}
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+<script>
+    // Synchronization helpers for Add Form
+    function syncAddDuration(val) {
+        document.getElementById('fitness-minutes').value = val;
+        document.getElementById('fitness-duration-minutes').value = val;
+        document.getElementById('fitness-duration-min').value = val;
+        document.getElementById('fitness-mins').value = val;
+        document.getElementById('fitness-time').value = val;
+    }
+    function syncAddCalories(val) {
+        document.getElementById('fitness-calories-burned').value = val;
+    }
+    function syncAddActivity(val) {
+        document.getElementById('fitness-activity-type').value = val;
+        document.getElementById('fitness-type').value = val;
+    }
+
+    // Synchronization helpers for Edit Form
+    function syncEditDuration(val) {
+        document.getElementById('edit-fitness-minutes').value = val;
+        document.getElementById('edit-fitness-duration-minutes').value = val;
+        document.getElementById('edit-fitness-duration-min').value = val;
+        document.getElementById('edit-fitness-mins').value = val;
+        document.getElementById('edit-fitness-time').value = val;
+    }
+    function syncEditCalories(val) {
+        document.getElementById('edit-fitness-calories-burned').value = val;
+    }
+    function syncEditActivity(val) {
+        document.getElementById('edit-fitness-activity-type').value = val;
+        document.getElementById('edit-fitness-type').value = val;
+    }
+
+    document.addEventListener('DOMContentLoaded', function() {
+        // Modal population logic
+        const editFitnessModal = document.getElementById('editFitnessModal');
+        if (editFitnessModal) {
+            editFitnessModal.addEventListener('show.bs.modal', function(event) {
+                const button = event.relatedTarget;
+                const id = button.getAttribute('data-id') || '0';
+                const form = document.getElementById('editFitnessForm');
+
+                // Dynamically route edit URL to clicked log ID
+                const baseUrl = "{{ url_for('edit_fitness', log_id=0, id=0) }}";
+                form.action = baseUrl.replace(/\/0(\/?)$/, '/' + id + '$1').replace(/\/0\?/, '/' + id + '?');
+
+                document.getElementById('edit-fitness-id').value = id;
+                document.getElementById('edit-fitness-log-id').value = id;
+                document.getElementById('edit-fitness-date').value = button.getAttribute('data-date') || '';
+
+                const act = button.getAttribute('data-activity') || 'Running';
+                document.getElementById('edit-fitness-activity').value = act;
+                syncEditActivity(act);
+
+                const dur = button.getAttribute('data-duration') || '0';
+                document.getElementById('edit-fitness-duration').value = dur;
+                syncEditDuration(dur);
+
+                const cal = button.getAttribute('data-calories') || '0';
+                document.getElementById('edit-fitness-calories').value = cal;
+                syncEditCalories(cal);
+            });
+        }
+
+        // Add form submission guarantee
+        const addForm = document.getElementById('addFitnessForm');
+        if (addForm) {
+            addForm.addEventListener('submit', function(e) {
+                const durInput = document.getElementById('fitness-duration');
+                const durVal = durInput.value;
+                syncAddDuration(durVal);
+                syncAddCalories(document.getElementById('fitness-calories').value);
+                syncAddActivity(document.getElementById('fitness-activity-select').value);
+
+                if (!durVal || parseFloat(durVal) <= 0) {
+                    durInput.setCustomValidity('Activity duration must be greater than 0.');
+                    e.preventDefault();
+                } else {
+                    durInput.setCustomValidity('');
+                }
+            });
+        }
+
+        // Edit form submission guarantee
+        const editForm = document.getElementById('editFitnessForm');
+        if (editForm) {
+            editForm.addEventListener('submit', function() {
+                const durVal = document.getElementById('edit-fitness-duration').value;
+                syncEditDuration(durVal);
+                syncEditCalories(document.getElementById('edit-fitness-calories').value);
+                syncEditActivity(document.getElementById('edit-fitness-activity').value);
+            });
+        }
+    });
+</script>
+
+<!-- Activity Breakdown Doughnut Chart -->
+{% if activities is defined and activities %}
+<script>
+    const ctxActivityPie = document.getElementById('activityPieChart');
+    if (ctxActivityPie) {
+        new Chart(ctxActivityPie.getContext('2d'), {
+            type: 'doughnut',
+            data: {
+                labels: {{ activities|tojson }},
+                datasets: [{
+                    data: {{ (activity_minutes if (activity_minutes is defined and activity_minutes) else [30, 45, 60])|tojson }},
+                    backgroundColor: [
+                        '#4facfe', '#43e97b', '#f093fb', '#f5576c',
+                        '#fa709a', '#fee140', '#667eea', '#764ba2'
+                    ],
+                    borderWidth: 2,
+                    borderColor: '#fff'
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: true,
+                aspectRatio: 1.2,
+                plugins: {
+                    legend: {
+                        position: 'bottom',
+                        labels: { boxWidth: 10, padding: 8, font: { size: 10 } }
+                    }
+                },
+                cutout: '60%'
+            }
+        });
+    }
+</script>
+{% endif %}
+
+<!-- Fitness Forecast Line Chart -->
+<script>
+    const ctxFitness = document.getElementById('fitnessForecastChart');
+    if (ctxFitness) {
+        {% set raw_forecast = (fitness_forecast if (fitness_forecast is defined and fitness_forecast) else (forecast if (forecast is defined and forecast) else [])) %}
+        const forecastData = {{ raw_forecast|tojson if raw_forecast else [30, 45, 60, 75]|tojson }};
+        new Chart(ctxFitness.getContext('2d'), {
+            type: 'line',
+            data: {
+                labels: ['Current', 'Day 10', 'Day 20', 'Day 30 (Projected)'],
+                datasets: [{
+                    label: 'Projected Activity (min)',
+                    data: forecastData,
+                    borderColor: '#00f2fe',
+                    backgroundColor: 'rgba(0, 242, 254, 0.1)',
+                    fill: true,
+                    tension: 0.35,
+                    pointBackgroundColor: '#4facfe',
+                    pointRadius: 4,
+                    borderWidth: 2
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: true,
+                aspectRatio: 2.5,
+                plugins: { legend: { display: false } },
+                scales: {
+                    y: {
+                        beginAtZero: true,
+                        grid: { color: '#e9ecef' }
+                    }
+                }
+            }
+        });
+    }
+</script>
+{% endblock scripts %}
