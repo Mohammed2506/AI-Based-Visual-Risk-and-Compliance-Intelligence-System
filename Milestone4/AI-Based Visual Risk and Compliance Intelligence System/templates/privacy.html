@@ -1,0 +1,395 @@
+{% extends "base.html" %}
+
+{% block extra_css %}
+<style>
+    /* ----- Hero & Layout Styling (Mirrors index & base) ----- */
+    .privacy-hero {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        color: white;
+        padding: 4.5rem 0 3.5rem;
+        margin-bottom: 3.5rem;
+        border-radius: 0 0 40px 40px;
+    }
+    .hero-title {
+        font-size: 3rem;
+        font-weight: 700;
+        text-shadow: 2px 2px 8px rgba(0,0,0,0.15);
+        line-height: 1.2;
+    }
+    .hero-subtitle {
+        font-size: 1.25rem;
+        opacity: 0.95;
+    }
+    .badge-light-custom {
+        background: rgba(255,255,255,0.2);
+        color: white;
+        padding: 0.45rem 1.1rem;
+        border-radius: 30px;
+        font-weight: 500;
+        backdrop-filter: blur(4px);
+        border: 1px solid rgba(255,255,255,0.15);
+        font-size: 0.88rem;
+    }
+
+    /* ----- Pillar & Policy Cards ----- */
+    .policy-card {
+        border: 1px solid var(--border-color);
+        border-radius: 18px;
+        background: var(--bg-card);
+        padding: 2rem;
+        margin-bottom: 2rem;
+        box-shadow: var(--shadow);
+        transition: transform 0.2s ease;
+    }
+    .policy-card:hover {
+        transform: translateY(-2px);
+    }
+    .policy-icon {
+        width: 52px;
+        height: 52px;
+        border-radius: 14px;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 1.4rem;
+        color: white;
+        flex-shrink: 0;
+    }
+
+    /* ----- Quick Navigation Sidebar ----- */
+    .toc-sticky {
+        position: sticky;
+        top: 90px;
+        border-radius: 18px;
+        border: 1px solid var(--border-color);
+        background: var(--bg-card);
+        padding: 1.5rem;
+        box-shadow: var(--shadow);
+    }
+    .toc-link {
+        display: block;
+        padding: 0.5rem 0.75rem;
+        color: var(--text-muted);
+        text-decoration: none;
+        font-size: 0.92rem;
+        border-radius: 8px;
+        transition: all 0.2s;
+    }
+    .toc-link:hover, .toc-link.active {
+        color: var(--accent);
+        background: var(--bg-wrapper);
+        font-weight: 600;
+    }
+
+    /* ----- Bottom Contact Highlight Box ----- */
+    .contact-highlight-box {
+        background: var(--bg-wrapper);
+        border: 1px solid var(--border-color);
+        border-radius: 14px;
+        padding: 1.25rem;
+    }
+
+    /* ----- Bottom CTA Banner ----- */
+    .cta-section {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        color: white;
+        padding: 4rem 0;
+        border-radius: 40px 40px 0 0;
+        margin-top: 4.5rem;
+    }
+    .btn-primary-soft {
+        background: white;
+        color: #667eea;
+        border: none;
+        border-radius: 50px;
+        padding: 0.75rem 2.2rem;
+        font-weight: 600;
+        transition: all 0.3s;
+    }
+    .btn-primary-soft:hover {
+        background: #f0f0f0;
+        transform: scale(1.02);
+    }
+
+    @media (max-width: 768px) {
+        .hero-title { font-size: 2.2rem; }
+        .hero-subtitle { font-size: 1.05rem; }
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="privacy-wrapper">
+    <!-- ===== HERO SECTION ===== -->
+    <section class="privacy-hero">
+        <div class="container text-center hero-content">
+            <span class="badge-light-custom mb-3">
+                <i class="fas fa-lock text-warning me-1"></i> Privacy-by-Design &amp; Data Ethics
+            </span>
+            <h1 class="hero-title mt-2">Privacy &amp; Data Protection Policy</h1>
+            <p class="hero-subtitle mx-auto mt-2" style="max-width: 700px;">
+                How the AI-Based Visual Risk and Compliance Intelligence System protects your personal habits,
+                financial records, study routines, and lifestyle telemetry.
+            </p>
+            <div class="mt-3 small" style="opacity: 0.8;">
+                <span>Last Updated: October 2026</span> • <span>Version 3.2</span>
+            </div>
+        </div>
+    </section>
+
+    <!-- ===== KEY SECURITY PILLARS ===== -->
+    <section class="py-2">
+        <div class="container">
+            <div class="row g-4 text-center mb-5">
+                <div class="col-md-3">
+                    <div class="card p-3 shadow-sm h-100" style="border: 1px solid var(--border-color); border-radius: 16px;">
+                        <i class="fas fa-key fa-2x text-primary mb-2"></i>
+                        <h6 class="fw-bold mb-1">Local Encryption</h6>
+                        <p class="text-muted small mb-0">AES-256 encryption at rest and in-transit for all behavioral datasets.</p>
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="card p-3 shadow-sm h-100" style="border: 1px solid var(--border-color); border-radius: 16px;">
+                        <i class="fas fa-user-slash fa-2x text-danger mb-2"></i>
+                        <h6 class="fw-bold mb-1">Zero Data Brokering</h6>
+                        <p class="text-muted small mb-0">Your Digital Twin data is never sold, leased, or monetized for advertising.</p>
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="card p-3 shadow-sm h-100" style="border: 1px solid var(--border-color); border-radius: 16px;">
+                        <i class="fas fa-microchip fa-2x text-info mb-2"></i>
+                        <h6 class="fw-bold mb-1">Isolated AI Training</h6>
+                        <p class="text-muted small mb-0">Predictive weights are mapped to your sandbox; models are not leaked globally.</p>
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="card p-3 shadow-sm h-100" style="border: 1px solid var(--border-color); border-radius: 16px;">
+                        <i class="fas fa-trash-restore fa-2x text-success mb-2"></i>
+                        <h6 class="fw-bold mb-1">Instant Data Purge</h6>
+                        <p class="text-muted small mb-0">One-click complete purge of past transactions, study logs, and simulations.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- ===== DETAILED PRIVACY FRAMEWORK ===== -->
+    <section class="py-4">
+        <div class="container">
+            <div class="row g-4">
+
+                <!-- Quick Navigation Sidebar -->
+                <div class="col-lg-4 d-none d-lg-block">
+                    <div class="toc-sticky">
+                        <h6 class="fw-bold text-uppercase small text-muted mb-3">Policy Index</h6>
+                        <nav class="d-flex flex-column gap-1">
+                            <a href="#overview" class="toc-link"><i class="fas fa-info-circle me-2"></i>1. Platform Overview</a>
+                            <a href="#collection" class="toc-link"><i class="fas fa-database me-2"></i>2. Telemetry We Collect</a>
+                            <a href="#ai-processing" class="toc-link"><i class="fas fa-robot me-2"></i>3. Predictive ML Processing</a>
+                            <a href="#data-storage" class="toc-link"><i class="fas fa-shield-alt me-2"></i>4. Security &amp; Storage</a>
+                            <a href="#user-rights" class="toc-link"><i class="fas fa-user-check me-2"></i>5. Your Rights &amp; Control</a>
+                            <a href="#contact-dpo" class="toc-link"><i class="fas fa-envelope-open me-2"></i>6. Governance &amp; Contact</a>
+                        </nav>
+                        <hr>
+                        <div class="p-2 rounded bg-light text-center">
+                            <small class="text-muted d-block mb-2">Need help with data requests?</small>
+                            <a href="{{ url_for('contact') }}" class="btn btn-sm btn-outline-primary rounded-pill w-100">
+                                <i class="fas fa-envelope me-1"></i> Contact Privacy Officer
+                            </a>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Policy Sections Content -->
+                <div class="col-lg-8">
+
+                    <!-- Section 1 -->
+                    <div class="policy-card" id="overview">
+                        <div class="d-flex align-items-center gap-3 mb-3">
+                            <div class="policy-icon" style="background: linear-gradient(135deg, #667eea, #764ba2);">
+                                <i class="fas fa-brain"></i>
+                            </div>
+                            <div>
+                                <h4 class="fw-bold mb-0" style="color: var(--text-primary);">1. Platform Overview &amp; Principles</h4>
+                                <small class="text-muted">Personal Decision Support Governance</small>
+                            </div>
+                        </div>
+                        <p class="text-muted leading-relaxed">
+                            The <strong>AI-Based Visual Risk and Compliance Intelligence System</strong> functions as a secure decision-support
+                            engine. By design, the platform creates an adaptive digital model of your lifestyle and commitments to simulate outcomes
+                            and forecast risk before you act. Because our intelligence platform depends on sensitive personal vectors, we enforce
+                            a strict <em>Privacy-by-Design</em> philosophy across all processing pipelines.
+                        </p>
+                    </div>
+
+                    <!-- Section 2 -->
+                    <div class="policy-card" id="collection">
+                        <div class="d-flex align-items-center gap-3 mb-3">
+                            <div class="policy-icon" style="background: linear-gradient(135deg, #f093fb, #f5576c);">
+                                <i class="fas fa-layer-group"></i>
+                            </div>
+                            <div>
+                                <h4 class="fw-bold mb-0" style="color: var(--text-primary);">2. Telemetry &amp; Data We Model</h4>
+                                <small class="text-muted">Pillars of the Digital Twin</small>
+                            </div>
+                        </div>
+                        <p class="text-muted">
+                            To evaluate risk indices and simulate your future scenarios, the system stores inputs under the following pillars:
+                        </p>
+                        <div class="d-flex flex-column gap-3 mt-3">
+                            <div class="p-3 rounded border" style="background: var(--bg-wrapper); border-color: var(--border-color) !important;">
+                                <strong class="d-block mb-1 text-primary"><i class="fas fa-wallet me-2"></i>Financial Activities</strong>
+                                <span class="text-muted small">Recorded income intervals, expense categories, recurring liabilities, and budget limits used to forecast liquidity stress and compliance exposure.</span>
+                            </div>
+                            <div class="p-3 rounded border" style="background: var(--bg-wrapper); border-color: var(--border-color) !important;">
+                                <strong class="d-block mb-1 text-danger"><i class="fas fa-book-reader me-2"></i>Study &amp; Academic Patterns</strong>
+                                <span class="text-muted small">Logged study durations, syllabus progress, milestone dates, and subject performance metrics used for GPA simulation.</span>
+                            </div>
+                            <div class="p-3 rounded border" style="background: var(--bg-wrapper); border-color: var(--border-color) !important;">
+                                <strong class="d-block mb-1 text-info"><i class="fas fa-running me-2"></i>Lifestyle &amp; Physical Telemetry</strong>
+                                <span class="text-muted small">Sleep schedules, active physical windows, and recovery milestones used to calculate cognitive fatigue and burnout guardrails.</span>
+                            </div>
+                            <div class="p-3 rounded border" style="background: var(--bg-wrapper); border-color: var(--border-color) !important;">
+                                <strong class="d-block mb-1 text-success"><i class="fas fa-shield-alt me-2"></i>Habits &amp; Compliance Rules</strong>
+                                <span class="text-muted small">Custom boundary constraints set by you (e.g., maximum daily leisure spending, minimum rest hours, mandatory study slots).</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Section 3 -->
+                    <div class="policy-card" id="ai-processing">
+                        <div class="d-flex align-items-center gap-3 mb-3">
+                            <div class="policy-icon" style="background: linear-gradient(135deg, #4facfe, #00f2fe);">
+                                <i class="fas fa-sliders-h"></i>
+                            </div>
+                            <div>
+                                <h4 class="fw-bold mb-0" style="color: var(--text-primary);">3. How AI &amp; Predictive Models Use Data</h4>
+                                <small class="text-muted">Machine Learning Boundaries</small>
+                            </div>
+                        </div>
+                        <p class="text-muted leading-relaxed">
+                            Our algorithms generate statistical predictions regarding future outcomes based on historical patterns. We commit to:
+                        </p>
+                        <ul class="text-muted small d-flex flex-column gap-2 mb-3">
+                            <li><strong>Non-Automated Detriment:</strong> System alerts are exclusively advisory. The engine serves trade-off simulations and warnings to support you, never making unalterable decisions on your behalf.</li>
+                            <li><strong>No Cross-Tenant Training:</strong> Your private financial logs and personal study habits are never ingested into global generative foundation models accessible to other users.</li>
+                            <li><strong>Transparent Scoring:</strong> Risk ratings displayed across your dashboards cite specific contributing factors (e.g., cashflow velocity or study deficits).</li>
+                        </ul>
+                    </div>
+
+                    <!-- Section 4 -->
+                    <div class="policy-card" id="data-storage">
+                        <div class="d-flex align-items-center gap-3 mb-3">
+                            <div class="policy-icon" style="background: linear-gradient(135deg, #43e97b, #38f9d7);">
+                                <i class="fas fa-lock"></i>
+                            </div>
+                            <div>
+                                <h4 class="fw-bold mb-0" style="color: var(--text-primary);">4. Security, Storage &amp; Encryption</h4>
+                                <small class="text-muted">Data Fortress Standards</small>
+                            </div>
+                        </div>
+                        <p class="text-muted leading-relaxed">
+                            All communication between your browser and our platform is protected with TLS 1.3 cryptographic protocols[cite: 1].
+                            Database entries representing your Digital Twin vectors are partitioned and encrypted with AES-256 bit keys.
+                            Regular security audits verify that behavioral telemetry remains isolated from administrative views[cite: 1].
+                        </p>
+                    </div>
+
+                    <!-- Section 5 -->
+                    <div class="policy-card" id="user-rights">
+                        <div class="d-flex align-items-center gap-3 mb-3">
+                            <div class="policy-icon" style="background: linear-gradient(135deg, #fa709a, #fee140);">
+                                <i class="fas fa-user-shield"></i>
+                            </div>
+                            <div>
+                                <h4 class="fw-bold mb-0" style="color: var(--text-primary);">5. User Control &amp; Data Rights</h4>
+                                <small class="text-muted">Full Sovereignty Over Your Twin</small>
+                            </div>
+                        </div>
+                        <p class="text-muted leading-relaxed">
+                            You retain complete ownership over every data point used to formulate your Digital Twin. You can:
+                        </p>
+                        <div class="row g-2">
+                            <div class="col-sm-6">
+                                <div class="p-2 border rounded text-muted small"><i class="fas fa-file-export text-primary me-2"></i><strong>Export JSON / CSV</strong> records anytime.</div>
+                            </div>
+                            <div class="col-sm-6">
+                                <div class="p-2 border rounded text-muted small"><i class="fas fa-eraser text-danger me-2"></i><strong>Reset Simulation History</strong> in one click.</div>
+                            </div>
+                            <div class="col-sm-6">
+                                <div class="p-2 border rounded text-muted small"><i class="fas fa-pause text-warning me-2"></i><strong>Freeze Telemetry Sync</strong> temporarily.</div>
+                            </div>
+                            <div class="col-sm-6">
+                                <div class="p-2 border rounded text-muted small"><i class="fas fa-user-times text-danger me-2"></i><strong>Delete Account &amp; Models</strong> permanently.</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Section 6: Governance, DPO Details & Direct Contact Link -->
+                    <div class="policy-card mb-0" id="contact-dpo">
+                        <div class="d-flex align-items-center gap-3 mb-3">
+                            <div class="policy-icon" style="background: linear-gradient(135deg, #a18cd1, #fbc2eb);">
+                                <i class="fas fa-balance-scale"></i>
+                            </div>
+                            <div>
+                                <h4 class="fw-bold mb-0" style="color: var(--text-primary);">6. Compliance Officer &amp; Inquiries</h4>
+                                <small class="text-muted">Audits &amp; Grievance Redressal</small>
+                            </div>
+                        </div>
+                        <p class="text-muted leading-relaxed mb-3">
+                            For inquiries concerning data protection policies, model transparency, or to exercise your right to erasure,
+                            please reach out through our compliance desk or send an inquiry via our contact portal:
+                        </p>
+
+                        <!-- Highlighted In-Page Contact Block -->
+                        <div class="contact-highlight-box mb-3">
+                            <div class="d-flex flex-column flex-sm-row justify-content-between align-items-sm-center gap-3">
+                                <div>
+                                    <strong class="d-block mb-1" style="color: var(--text-primary);">
+                                        <i class="fas fa-shield-alt text-primary me-2"></i>Data Protection Officer (DPO)
+                                    </strong>
+                                    <span class="text-muted small d-block">David Sterling • Chief Compliance Architect</span>
+                                    <span class="text-muted small d-block">
+                                        Email: <a href="mailto:david.sterling@visualrisk.ai" class="text-decoration-none">david.sterling@visualrisk.ai</a>
+                                    </span>
+                                </div>
+                                <div>
+                                    <a href="{{ url_for('contact') }}" class="btn btn-outline-primary rounded-pill px-3 py-2 text-nowrap">
+                                        <i class="fas fa-envelope me-1"></i> Contact Page
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+
+                        <p class="text-muted small mb-0">
+                            General privacy inquiries: <a href="mailto:privacy@visualrisk.ai" class="text-decoration-none">privacy@visualrisk.ai</a>
+                        </p>
+                    </div>
+
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- ===== CALL TO ACTION & DIRECT CONTACT LINK ===== -->
+    <section class="cta-section">
+        <div class="container text-center">
+            <h2 class="display-6 fw-bold mb-3">
+                Decisions Supported by Intelligence, Protected by Design
+            </h2>
+            <p class="mb-4" style="font-size: 1.15rem; opacity: 0.9; max-width: 600px; margin: 0 auto;">
+                Have questions about your data privacy, risk algorithms, or system compliance? Reach out directly to our team.
+            </p>
+            <div class="d-flex justify-content-center gap-3 flex-wrap">
+                <!-- Primary Contact Link Button -->
+                <a href="{{ url_for('contact') }}" class="btn btn-primary-soft btn-lg px-4 py-3">
+                    <i class="fas fa-paper-plane me-2"></i> Contact Us
+                </a>
+                <a href="{{ url_for('index') }}" class="btn btn-outline-white btn-lg px-4 py-3">
+                    <i class="fas fa-home me-1"></i> Return Home
+                </a>
+            </div>
+        </div>
+    </section>
+</div>
+{% endblock %}
